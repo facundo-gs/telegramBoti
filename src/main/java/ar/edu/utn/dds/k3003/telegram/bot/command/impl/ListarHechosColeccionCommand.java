@@ -27,11 +27,11 @@ public class ListarHechosColeccionCommand extends AbstractBotCommand {
 
         if (params.isEmpty()) {
             return formatError("""
-                    Debes proporcionar el ID o nombre de la colección.
-                    Uso: /listarhechos <coleccionId>
+            Debes proporcionar el ID o nombre de la colección.
+            Uso: /listarhechos <coleccionId>
 
-                    Ejemplo: /listarhechos COL-001
-                    """);
+            Ejemplo: /listarhechos "COL-001"
+            """);
         }
 
         String coleccionId = params.get(0);
@@ -99,6 +99,6 @@ public class ListarHechosColeccionCommand extends AbstractBotCommand {
 
     @Override
     public String getUsageExample() {
-        return "/listarhechos COL-001";
+        return "/listarhechos \"COL-001\"";
     }
 }

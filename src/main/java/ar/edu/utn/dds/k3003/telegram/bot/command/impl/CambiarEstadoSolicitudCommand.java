@@ -34,7 +34,7 @@ public class CambiarEstadoSolicitudCommand extends AbstractBotCommand {
                             "Valores válidos para <estado>: " + String.join(", ",
                             EstadoSolicitudBorradoEnum.valuesAsString()) + "\n\n" +
                             "Ejemplo:\n" +
-                            "/cambiarestado 5 ACEPTADA 'Descripción actualizada'"
+                            "/cambiarestado 5 ACEPTADA \"Descripción actualizada\""
             );
         }
 
@@ -83,6 +83,6 @@ public class CambiarEstadoSolicitudCommand extends AbstractBotCommand {
 
     @Override
     public String getUsageExample() {
-        return "/cambiarestado <solicitudId> <estado> [descripcion]";
+        return "/cambiarestado 5 ACEPTADA \"Descripción actualizada\"";
     }
 }

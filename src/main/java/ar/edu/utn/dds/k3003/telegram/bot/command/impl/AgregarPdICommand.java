@@ -31,9 +31,9 @@ public class AgregarPdICommand extends AbstractBotCommand {
                     "Faltan parámetros.\n" +
                             "Uso: /agregarpdi <hechoId> <descripcion> <lugar> <contenido> [imagenUrl]\n\n" +
                             "Ejemplo 1 (sin imagen):\n" +
-                            "/agregarpdi HECHO-001 'Descripcion del evento' 'Buenos Aires' 'Contenido del evento'\n\n" +
+                            "/agregarpdi HECHO-001 \"Descripcion del evento\" \"Buenos Aires\" \"Contenido del evento\"\n\n" +
                             "Ejemplo 2 (con imagen):\n" +
-                            "/agregarpdi HECHO-001 'Evento con imagen' 'Buenos Aires' 'Contenido del evento' https://imagen.jpg"
+                            "/agregarpdi HECHO-001 \"Evento con imagen\" \"Buenos Aires\" \"Contenido del evento\" https://imagen.jpg"
             );
         }
 
@@ -66,9 +66,6 @@ public class AgregarPdICommand extends AbstractBotCommand {
 
             if (imagenUrl != null) {
                 response.append("\n🖼️ *Imagen:* Sí\n");
-                response.append("⚙️ *Estado:* ").append(pdiCreado.estadoProcesamiento()).append("\n");
-                response.append("\n💡 La imagen se está procesando. Usa /ver ").append(pdiCreado.id())
-                        .append(" para ver el resultado.");
             }
 
             return response.toString();
@@ -94,6 +91,9 @@ public class AgregarPdICommand extends AbstractBotCommand {
 
     @Override
     public String getUsageExample() {
-        return "/agregarpdi HECHO-001 'Descripcion' 'Lugar' 'Contenido' [imagenUrl]";
+        return "Ejemplo 1 (sin imagen):\n" +
+                "/agregarpdi HECHO-001 \"Descripcion del evento\" \"Buenos Aires\" \"Contenido del evento\"\n\n" +
+                "Ejemplo 2 (con imagen):\n" +
+                "/agregarpdi HECHO-001 \"Evento con imagen\" \"Buenos Aires\" \"Contenido del evento\" https://imagen.jpg";
     }
 }

@@ -24,22 +24,22 @@ public class FuenteRestClient {
         this.restClient = builder.baseUrl(endpoint).build();
     }
 
-    /**
-     * Lista todos los hechos de la fuente
-     */
-    public List<HechoDTO> listarHechos() {
-        try {
-            log.info("Listando hechos desde Fuente");
-
-            return restClient.get()
-                    .uri("/api/hecho")
-                    .retrieve()
-                    .body(new org.springframework.core.ParameterizedTypeReference<List<HechoDTO>>() {});
-        } catch (Exception e) {
-            log.error("Error listando hechos: {}", e.getMessage());
-            throw new RuntimeException("Error conectando con Fuente: " + e.getMessage(), e);
-        }
-    }
+//    /**
+//     * Lista todos los hechos de la fuente
+//     */
+//    public List<HechoDTO> listarHechos() {
+//        try {
+//            log.info("Listando hechos desde Fuente");
+//
+//            return restClient.get()
+//                    .uri("/api/hecho")
+//                    .retrieve()
+//                    .body(new org.springframework.core.ParameterizedTypeReference<List<HechoDTO>>() {});
+//        } catch (Exception e) {
+//            log.error("Error listando hechos: {}", e.getMessage());
+//            throw new RuntimeException("Error conectando con Fuente: " + e.getMessage(), e);
+//        }
+//    }
 
     /**
      * Obtiene un hecho específico por ID
@@ -61,20 +61,21 @@ public class FuenteRestClient {
 
     /**
      * Crea un nuevo hecho en la fuente
+     * Endpoint: POST /api/hecho
      */
-    public HechoDTO crearHecho(Map<String, Object> hechoData) {
+    public HechoDTO crearHecho(HechoDTO hechoDTO) {
         try {
-            log.info("Creando nuevo hecho en Fuente");
+            log.info("Creando nuevo hecho en Fuente: {}", hechoDTO);
 
             return restClient.post()
                     .uri("/api/hecho")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(hechoData)
+                    .body(hechoDTO)
                     .retrieve()
                     .body(HechoDTO.class);
         } catch (Exception e) {
             log.error("Error creando hecho: {}", e.getMessage());
-            throw new RuntimeException("Error creando hecho: " + e.getMessage(), e);
+            throw new RuntimeException("Error conectando con el servicio de fuentes: " + e.getMessage(), e);
         }
     }
 }

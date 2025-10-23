@@ -3,7 +3,6 @@ package ar.edu.utn.dds.k3003.telegram.bot.rest_client;
 import ar.edu.utn.dds.k3003.telegram.bot.dtos.SolicitudDTO;
 import ar.edu.utn.dds.k3003.telegram.bot.dtos.SolicitudModificacionRequestDTO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -22,20 +21,6 @@ public class SolicitudesRestClient {
         this.restClient = RestClient.builder()
                 .baseUrl(endpoint)
                 .build();
-    }
-
-    public List<SolicitudDTO> findSolicitudesByHechoId(String id) {
-        return restClient.get()
-                .uri("/api/solicitudes/{hechoId}", id)
-                .retrieve()
-                .body(new ParameterizedTypeReference<List<SolicitudDTO>>() {});
-    }
-
-    public boolean estaActivo(String hechoId) {
-        return Boolean.TRUE.equals(restClient.get()
-                .uri("/api/solicitudes/activo/{hechoId}", hechoId)
-                .retrieve()
-                .body(Boolean.class));
     }
 
     /**

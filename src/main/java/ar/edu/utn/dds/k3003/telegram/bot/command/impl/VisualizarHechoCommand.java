@@ -33,7 +33,7 @@ public class VisualizarHechoCommand extends AbstractBotCommand {
             return formatError(
                     "Debes proporcionar el ID del hecho.\n" +
                             "Uso: /visualizarhecho <hechoId>\n\n" +
-                            "Ejemplo: /visualizarhecho HECHO-001"
+                            "Ejemplo: /visualizarhecho \"HECHO-001\""
             );
         }
 

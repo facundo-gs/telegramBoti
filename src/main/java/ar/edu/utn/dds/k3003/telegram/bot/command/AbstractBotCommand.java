@@ -46,7 +46,7 @@ public abstract class AbstractBotCommand implements BotCommand {
     }
 
     /**
-     * Método abstracto que cada comando debe implementar con su lógica específica
+     * Abstract method que cada comando debe implementar con su lógica específica
      */
     protected abstract String executeCommand(Update update) throws TelegramApiException;
 
@@ -55,14 +55,25 @@ public abstract class AbstractBotCommand implements BotCommand {
      */
     protected List<String> extractParameters(Update update) {
         String text = update.getMessage().getText();
-        String[] parts = text.split("\\s+");
 
-        // Remover el comando (primera parte) y retornar el resto
-        if (parts.length > 1) {
-            return Arrays.asList(Arrays.copyOfRange(parts, 1, parts.length));
+        // Regex: match "quoted strings" or individual words
+        var matcher = java.util.regex.Pattern
+                .compile("\"([^\"]+)\"|'([^']+)'|(\\S+)")
+                .matcher(text);
+
+        List<String> params = new java.util.ArrayList<>();
+        boolean first = true; // skip command name
+        while (matcher.find()) {
+            if (first) { first = false; continue; } // skip "/agregarhecho"
+            String value = matcher.group(1) != null ? matcher.group(1)
+                    : matcher.group(2) != null ? matcher.group(2)
+                    : matcher.group(3);
+            params.add(value);
         }
-        return List.of();
+
+        return params;
     }
+
 
     /**
      * Obtiene el chat ID del usuario

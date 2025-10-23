@@ -29,9 +29,9 @@ public class CrearSolicitudCommand extends AbstractBotCommand {
         if (params.size() < 4) {
             return formatError(
                     "Faltan parámetros.\n" +
-                            "Uso: /crearsolicitud <hechoId> <descripcion> \n\n" +
+                            "Uso: /crearsolicitud <hechoId> <descripcion>\n\n" +
                             "Ejemplo:\n" +
-                            "/crearsolicitud '2' 'Una descripción increible' "
+                            "/crearsolicitud \"2\" \"Una descripción increíble\""
             );
         }
 
