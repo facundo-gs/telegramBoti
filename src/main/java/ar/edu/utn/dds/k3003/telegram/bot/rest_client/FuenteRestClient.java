@@ -1,0 +1,80 @@
+package ar.edu.utn.dds.k3003.telegram.bot.rest_client;
+
+import ar.edu.utn.dds.k3003.telegram.bot.dtos.HechoDTO;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Cliente REST para el módulo Fuente
+ * https://dsifuente.onrender.com
+ */
+@Component
+@Slf4j
+public class FuenteRestClient {
+
+    private final RestClient restClient;
+
+    public FuenteRestClient(RestClient.Builder builder) {
+        String endpoint = System.getenv().getOrDefault("DDS_FUENTE", "http://localhost:8082");
+        this.restClient = builder.baseUrl(endpoint).build();
+    }
+
+    /**
+     * Lista todos los hechos de la fuente
+     */
+    public List<HechoDTO> listarHechos() {
+        try {
+            log.info("Listando hechos desde Fuente");
+
+            return restClient.get()
+                    .uri("/api/hecho")
+                    .retrieve()
+                    .body(new org.springframework.core.ParameterizedTypeReference<List<HechoDTO>>() {});
+        } catch (Exception e) {
+            log.error("Error listando hechos: {}", e.getMessage());
+            throw new RuntimeException("Error conectando con Fuente: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Obtiene un hecho específico por ID
+     * Endpoint: GET /api/hecho/{id}
+     */
+    public HechoDTO obtenerHecho(String hechoId) {
+        try {
+            log.info("Obteniendo hecho {} desde Fuente", hechoId);
+
+            return restClient.get()
+                    .uri("/api/hecho/{id}", hechoId)
+                    .retrieve()
+                    .body(HechoDTO.class);
+        } catch (Exception e) {
+            log.error("Error obteniendo hecho {}: {}", hechoId, e.getMessage());
+            throw new RuntimeException("Error obteniendo hecho: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Crea un nuevo hecho en la fuente
+     */
+    public HechoDTO crearHecho(Map<String, Object> hechoData) {
+        try {
+            log.info("Creando nuevo hecho en Fuente");
+
+            return restClient.post()
+                    .uri("/api/hecho")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(hechoData)
+                    .retrieve()
+                    .body(HechoDTO.class);
+        } catch (Exception e) {
+            log.error("Error creando hecho: {}", e.getMessage());
+            throw new RuntimeException("Error creando hecho: " + e.getMessage(), e);
+        }
+    }
+}
