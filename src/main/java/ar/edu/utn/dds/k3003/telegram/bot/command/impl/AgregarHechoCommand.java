@@ -4,6 +4,7 @@ import ar.edu.utn.dds.k3003.telegram.bot.dtos.CategoriaHechoEnum;
 import ar.edu.utn.dds.k3003.telegram.bot.dtos.HechoDTO;
 import ar.edu.utn.dds.k3003.telegram.bot.rest_client.FuenteRestClient;
 import ar.edu.utn.dds.k3003.telegram.bot.command.AbstractBotCommand;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -13,8 +14,9 @@ import java.util.List;
 
 /**
  * Comando /agregarhecho - Agrega un nuevo hecho a una fuente
- * Uso: /agregarhecho <nombreColeccion> <titulo> <ubicacion> [categoria]
+ * Uso: /agregarhecho <nombre_coleccion> <titulo> <ubicacion> [categoria]
  */
+@Slf4j
 @Component
 public class AgregarHechoCommand extends AbstractBotCommand {
 
@@ -27,11 +29,11 @@ public class AgregarHechoCommand extends AbstractBotCommand {
     @Override
     protected String executeCommand(Update update) {
         List<String> params = extractParameters(update);
-
+        log.info("AgregarHechoCommand - Parámetros recibidos: {}", params);
         if (params.size() < 3) {
             return formatError(
                     "Faltan parámetros.\n" +
-                            "Uso: /agregarhecho <nombreColeccion> <titulo> <ubicacion> [categoria]\n\n" +
+                            "Uso: /agregarhecho <nombre_coleccion> <titulo> <ubicacion> [categoria]\n\n" +
                             "Ejemplo 1 (sin categoría):\n" +
                             "/agregarhecho coleccion1 \"Manifestación pacífica\" \"Buenos Aires\"\n\n" +
                             "Ejemplo 2 (con categoría):\n" +
@@ -57,7 +59,7 @@ public class AgregarHechoCommand extends AbstractBotCommand {
         try {
             HechoDTO nuevoHecho = new HechoDTO(
                     null,                        // id (generado por backend)
-                    nombreColeccion,              // ✅ nombreColeccion indicado por el usuario
+                    nombreColeccion,              // ✅ nombre_coleccion indicado por el usuario
                     titulo,
                     Collections.emptyList(),      // etiquetas (vacías)
                     categoria,                    // categoría seleccionada
@@ -65,7 +67,7 @@ public class AgregarHechoCommand extends AbstractBotCommand {
                     LocalDateTime.now(),
                     getUsername(update)           // origen: usuario Telegram
             );
-
+            log.info("AgregarHechoCommand - Hecho creado: {}", nuevoHecho);
             HechoDTO hechoCreado = fuenteRestClient.crearHecho(nuevoHecho);
 
             StringBuilder response = new StringBuilder();

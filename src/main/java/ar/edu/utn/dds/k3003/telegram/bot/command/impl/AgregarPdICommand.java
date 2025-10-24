@@ -3,6 +3,7 @@ package ar.edu.utn.dds.k3003.telegram.bot.command.impl;
 import ar.edu.utn.dds.k3003.telegram.bot.rest_client.PdIRestClient;
 import ar.edu.utn.dds.k3003.telegram.bot.dtos.PdIDTO;
 import ar.edu.utn.dds.k3003.telegram.bot.command.AbstractBotCommand;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -11,8 +12,9 @@ import java.util.List;
 
 /**
  * Comando /agregarpdi - Agrega un nuevo PDI a un hecho
- * Uso: /agregarpdi <hechoId> <descripcion> <lugar> <contenido> [imagenUrl]
+ * Uso: /agregarpdi <hecho_id> <descripcion> <lugar> <contenido> [imagenUrl]
  */
+@Slf4j
 @Component
 public class AgregarPdICommand extends AbstractBotCommand {
 
@@ -25,11 +27,11 @@ public class AgregarPdICommand extends AbstractBotCommand {
     @Override
     protected String executeCommand(Update update) {
         List<String> params = extractParameters(update);
-
+        log.info("AgregarPdICommand - Parámetros recibidos: {}", params);
         if (params.size() < 4) {
             return formatError(
                     "Faltan parámetros.\n" +
-                            "Uso: /agregarpdi <hechoId> <descripcion> <lugar> <contenido> [imagenUrl]\n\n" +
+                            "Uso: /agregarpdi <hecho_id> <descripcion> <lugar> <contenido> [imagenUrl]\n\n" +
                             "Ejemplo 1 (sin imagen):\n" +
                             "/agregarpdi HECHO-001 \"Descripcion del evento\" \"Buenos Aires\" \"Contenido del evento\"\n\n" +
                             "Ejemplo 2 (con imagen):\n" +
@@ -53,8 +55,9 @@ public class AgregarPdICommand extends AbstractBotCommand {
                     contenido,
                     imagenUrl
             );
-
+            log.info("AgregarPdICommand - nuevo PDI: {}", nuevoPdi);
             PdIDTO pdiCreado = pdIRestClient.crearPdI(nuevoPdi);
+            log.info("AgregarPdICommand - PDI creado: {}", pdiCreado);
 
             StringBuilder response = new StringBuilder();
             response.append(formatSuccess("PDI creado exitosamente!")).append("\n\n");
@@ -65,7 +68,11 @@ public class AgregarPdICommand extends AbstractBotCommand {
             response.append("📄 *Contenido:* ").append(pdiCreado.contenido()).append("\n");
 
             if (imagenUrl != null) {
-                response.append("\n🖼️ *Imagen:* Sí\n");
+                response.append("\n🖼️ *Imagen:* ").append(pdiCreado.imagenUrl()).append("\n");
+                if (!pdiCreado.etiquetasIA().isEmpty())
+                    response.append("📌 *Etiquetas:* ").append(pdiCreado.etiquetasIA()).append("\n");
+                if (pdiCreado.ocrText() != null)
+                    response.append("📌 *OCR text:* ").append(pdiCreado.ocrText()).append("\n");
             }
 
             return response.toString();

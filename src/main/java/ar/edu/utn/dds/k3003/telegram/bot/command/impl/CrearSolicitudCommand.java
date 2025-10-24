@@ -6,12 +6,11 @@ import ar.edu.utn.dds.k3003.telegram.bot.command.AbstractBotCommand;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
  * Comando /crearsolicitud - Agrega una nueva solicitud
- * Uso: /crearsolicitud <hechoId> <descripcion>
+ * Uso: /crearsolicitud <hecho_id> <descripcion>
  */
 @Component
 public class CrearSolicitudCommand extends AbstractBotCommand {
@@ -26,7 +25,7 @@ public class CrearSolicitudCommand extends AbstractBotCommand {
     protected String executeCommand(Update update) {
         List<String> params = extractParameters(update);
 
-        if (params.size() < 4) {
+        if (params.size() < 2) {
             return formatError(
                     "Faltan parámetros.\n" +
                             "Uso: /crearsolicitud <hechoId> <descripcion>\n\n" +
@@ -78,6 +77,6 @@ public class CrearSolicitudCommand extends AbstractBotCommand {
 
     @Override
     public String getUsageExample() {
-        return "/crearsolicitud 'Titulo' 'Descripcion' 'Tipo' 'Prioridad'";
+        return "/crearsolicitud 'HechoId' 'Descripcion'";
     }
 }

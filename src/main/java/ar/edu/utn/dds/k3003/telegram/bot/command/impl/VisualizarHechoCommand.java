@@ -12,7 +12,8 @@ import java.util.List;
 
 /**
  * Requerimiento 2: Visualizar un hecho, que incluye visualizar los PDIs y las imágenes
- * Comando: /visualizarhecho <hechoId>
+ * Comando: /visualizarhecho <hecho_id>
+ *     FUNCIONA!
  */
 @Component
 public class VisualizarHechoCommand extends AbstractBotCommand {
@@ -32,7 +33,7 @@ public class VisualizarHechoCommand extends AbstractBotCommand {
         if (params.isEmpty()) {
             return formatError(
                     "Debes proporcionar el ID del hecho.\n" +
-                            "Uso: /visualizarhecho <hechoId>\n\n" +
+                            "Uso: /visualizarhecho <hecho_id>\n\n" +
                             "Ejemplo: /visualizarhecho \"HECHO-001\""
             );
         }
@@ -89,7 +90,7 @@ public class VisualizarHechoCommand extends AbstractBotCommand {
             if (pdis == null || pdis.isEmpty()) {
                 response.append("ℹ️ Este hecho no tiene PDIs asociados\n\n");
                 response.append("💡 Usa `/agregarpdi ").append(hechoId)
-                        .append(" <descripcion> [url]` para agregar uno");
+                        .append(" <descripcion> <lugar> <contenido> [imagen_url]` para agregar uno");
             } else {
                 response.append("📄 *PDIs Asociados:* ").append(pdis.size()).append("\n\n");
 
@@ -167,6 +168,6 @@ public class VisualizarHechoCommand extends AbstractBotCommand {
 
     @Override
     public String getUsageExample() {
-        return "/visualizarhecho HECHO-001";
+        return "/visualizarhecho 1";
     }
 }

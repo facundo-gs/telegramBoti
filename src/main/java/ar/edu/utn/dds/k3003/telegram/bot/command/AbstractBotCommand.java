@@ -4,8 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Template Method Pattern: Clase base para comandos del bot
@@ -56,19 +59,20 @@ public abstract class AbstractBotCommand implements BotCommand {
     protected List<String> extractParameters(Update update) {
         String text = update.getMessage().getText();
 
-        // Regex: match "quoted strings" or individual words
-        var matcher = java.util.regex.Pattern
-                .compile("\"([^\"]+)\"|'([^']+)'|(\\S+)")
-                .matcher(text);
+        // Remove the command (the first token)
+        String withoutCommand = text.replaceFirst("^/\\S+\\s*", "");
 
-        List<String> params = new java.util.ArrayList<>();
-        boolean first = true; // skip command name
+        List<String> params = new ArrayList<>();
+
+        // Regex: capture sequences inside quotes or non-space sequences
+        Matcher matcher = Pattern.compile("\"([^\"]*)\"|(\\S+)").matcher(withoutCommand);
+
         while (matcher.find()) {
-            if (first) { first = false; continue; } // skip "/agregarhecho"
-            String value = matcher.group(1) != null ? matcher.group(1)
-                    : matcher.group(2) != null ? matcher.group(2)
-                    : matcher.group(3);
-            params.add(value);
+            if (matcher.group(1) != null) {
+                params.add(matcher.group(1)); // quoted value
+            } else {
+                params.add(matcher.group(2)); // unquoted value
+            }
         }
 
         return params;
