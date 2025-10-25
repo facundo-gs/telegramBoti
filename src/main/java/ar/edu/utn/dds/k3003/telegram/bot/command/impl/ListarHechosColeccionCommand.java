@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * Requerimiento 1: Listar hechos de una colección del agregador
- * Comando: /listarhechos <coleccionId>
+ * Comando: /listarhechos <coleccion>
  */
 @Component
 public class ListarHechosColeccionCommand extends AbstractBotCommand {
@@ -27,17 +27,20 @@ public class ListarHechosColeccionCommand extends AbstractBotCommand {
 
         if (params.isEmpty()) {
             return formatError("""
-            Debes proporcionar el ID o nombre de la colección.
-            Uso: /listarhechos <coleccionId>
+                Debes proporcionar el ID o nombre de la colección.
+                Uso: /listarhechos <coleccion>
 
-            Ejemplo: /listarhechos "COL-001"
-            """);
+                Ejemplo: /listarhechos "coleccion1"
+                """);
         }
 
-        String coleccionId = params.get(0);
+        String coleccionId = params.get(0).trim();
+        if (coleccionId.isBlank()) {
+            return formatError("La colección no puede estar vacía.");
+        }
 
         try {
-            // Obtener hechos de la colección
+            // Obtener hechos de la colección (GET directo al Agregador)
             List<HechoDTO> hechos = agregadorRestClient.obtenerHechosDeColeccion(coleccionId);
 
             if (hechos == null || hechos.isEmpty()) {
@@ -99,6 +102,6 @@ public class ListarHechosColeccionCommand extends AbstractBotCommand {
 
     @Override
     public String getUsageExample() {
-        return "/listarhechos \"COL-001\"";
+        return "/listarhechos \"coleccion1\"";
     }
 }

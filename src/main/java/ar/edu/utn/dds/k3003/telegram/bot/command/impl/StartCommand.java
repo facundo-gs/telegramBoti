@@ -15,7 +15,7 @@ public class StartCommand extends AbstractBotCommand {
         String username = getUsername(update);
 
         return """
-                👋 ¡Hola %s! Bienvenido al Bot de Gestión de Datos
+                👋 ¡Hola %s! Bienvenido al Bot de Diseño de sistemas
                 
                 🚀 *Funcionalidades principales:*
                 • Listar hechos de una colección
