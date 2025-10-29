@@ -10,10 +10,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Comando /agregarpdi - Agrega un nuevo PDI a un hecho
- * Uso: /agregarpdi <hecho_id> <descripcion> <lugar> <contenido> [imagenUrl]
- */
+
+// Uso: /agregarpdi <hecho_id> <descripcion> <lugar> <contenido> [imagenUrl]
 @Slf4j
 @Component
 public class AgregarPdICommand extends AbstractBotCommand {
@@ -69,7 +67,7 @@ public class AgregarPdICommand extends AbstractBotCommand {
 
             if (imagenUrl != null) {
                 response.append("\n🖼️ *Imagen:* ").append(pdiCreado.imagenUrl()).append("\n");
-                if (!pdiCreado.etiquetasIA().isEmpty())
+                if (pdiCreado.etiquetasIA() == null || !pdiCreado.etiquetasIA().isEmpty())
                     response.append("📌 *Etiquetas:* ").append(pdiCreado.etiquetasIA()).append("\n");
                 if (pdiCreado.ocrText() != null)
                     response.append("📌 *OCR text:* ").append(pdiCreado.ocrText()).append("\n");

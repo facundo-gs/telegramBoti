@@ -12,10 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Comando /agregarhecho - Agrega un nuevo hecho a una fuente
- * Uso: /agregarhecho <nombre_coleccion> <titulo> <ubicacion> [categoria]
- */
+// Uso: /agregarhecho <nombre_coleccion> <titulo> <ubicacion> [categoria]
 @Slf4j
 @Component
 public class AgregarHechoCommand extends AbstractBotCommand {

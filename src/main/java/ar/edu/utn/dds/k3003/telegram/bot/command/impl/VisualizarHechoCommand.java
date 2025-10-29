@@ -10,11 +10,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
 
-/**
- * Requerimiento 2: Visualizar un hecho, que incluye visualizar los PDIs y las imágenes
- * Comando: /visualizarhecho <hecho_id>
- *     FUNCIONA!
- */
+
+// Comando: /visualizarhecho <hecho_id>
 @Component
 public class VisualizarHechoCommand extends AbstractBotCommand {
 

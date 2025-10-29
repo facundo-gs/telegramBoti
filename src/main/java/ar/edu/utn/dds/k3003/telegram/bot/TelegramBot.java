@@ -14,11 +14,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.Optional;
 
-/**
- * Bot principal de Telegram para gestión del sistema
- * Implementa Long Polling para recibir actualizaciones de Telegram
- * Utiliza Command Pattern para manejar los comandos de forma extensible
- */
+
 @Component
 @Slf4j
 public class TelegramBot extends TelegramLongPollingBot {
@@ -67,9 +63,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    /**
-     * Valida que el update sea procesable
-     */
+
     private boolean isValidUpdate(Update update) {
         return update != null &&
                 update.hasMessage() &&
@@ -78,9 +72,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 !update.getMessage().getText().trim().isEmpty();
     }
 
-    /**
-     * Obtiene el username del usuario de forma segura
-     */
+
     private String getUsernameFromUpdate(Update update) {
         if (update.getMessage().getFrom() != null &&
                 update.getMessage().getFrom().getUserName() != null) {
@@ -95,9 +87,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         return "Usuario" + update.getMessage().getFrom().getId();
     }
 
-    /**
-     * Procesa el comando recibido
-     */
+
     private String processCommand(Update update, String messageText) {
         // Extraer el nombre del comando
         String commandName = extractCommandName(messageText);
@@ -129,9 +119,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    /**
-     * Extrae el nombre del comando del texto del mensaje
-     */
+
     private String extractCommandName(String messageText) {
         if (messageText == null || !messageText.startsWith("/")) {
             return "";
@@ -142,9 +130,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         return parts[0].toLowerCase();
     }
 
-    /**
-     * Formatea el mensaje de comando desconocido
-     */
+
     private String formatUnknownCommandMessage(String commandName) {
         StringBuilder message = new StringBuilder();
         message.append("❌ Comando no reconocido: /").append(commandName).append("\n\n");
@@ -159,9 +145,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         return message.toString();
     }
 
-    /**
-     * Busca comandos similares (simple matching)
-     */
+
     private String findSimilarCommand(String commandName) {
         return commandRegistry.getAllCommands().stream()
                 .map(BotCommand::getCommandName)
@@ -170,9 +154,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 .orElse(null);
     }
 
-    /**
-     * Envía un mensaje de texto al usuario
-     */
+
     public void sendMessage(Long chatId, String text) {
         if (chatId == null || text == null || text.trim().isEmpty()) {
             log.warn("Intento de enviar mensaje inválido (chatId: {}, text vacio: {})",

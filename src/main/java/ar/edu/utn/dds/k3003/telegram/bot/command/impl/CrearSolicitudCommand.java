@@ -8,10 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
 
-/**
- * Comando /crearsolicitud - Agrega una nueva solicitud
- * Uso: /crearsolicitud <hecho_id> <descripcion>
- */
+// Uso: /crearsolicitud <hecho_id> <descripcion>
 @Component
 public class CrearSolicitudCommand extends AbstractBotCommand {
 

@@ -10,10 +10,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
 
-/**
- * Comando /cambiarestado - Cambia el estado de una solicitud
- * Uso: /cambiarestado <solicitudId> <estado> [descripcion]
- */
+// Uso: /cambiarestado <solicitudId> <estado> [descripcion]
+
 @Component
 public class CambiarEstadoSolicitudCommand extends AbstractBotCommand {
 

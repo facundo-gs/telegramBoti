@@ -47,48 +47,14 @@ public class CommandRegistry {
         return Optional.ofNullable(commands.get(normalizedName));
     }
 
-    /**
-     * Verifica si un comando existe
-     */
-    public boolean hasCommand(String commandName) {
-        String normalizedName = commandName.toLowerCase().replace("/", "");
-        return commands.containsKey(normalizedName);
-    }
-
-    /**
-     * Obtiene todos los comandos disponibles
-     */
     public Collection<BotCommand> getAllCommands() {
         return Collections.unmodifiableCollection(commands.values());
     }
 
-    /**
-     * Obtiene la lista de comandos ordenados alfabéticamente
-     */
     public List<BotCommand> getSortedCommands() {
         List<BotCommand> sorted = new ArrayList<>(commands.values());
         sorted.sort(Comparator.comparing(BotCommand::getCommandName));
         return sorted;
     }
 
-    /**
-     * Genera el mensaje de ayuda con todos los comandos
-     */
-    public String getHelpMessage() {
-        StringBuilder help = new StringBuilder();
-        help.append("📋 *Comandos Disponibles:*\n\n");
-
-        for (BotCommand command : getSortedCommands()) {
-            help.append("/").append(command.getCommandName())
-                    .append(" - ").append(command.getDescription())
-                    .append("\n");
-
-            if (command.requiresParameters()) {
-                help.append("   _Ejemplo: ").append(command.getUsageExample()).append("_\n");
-            }
-            help.append("\n");
-        }
-
-        return help.toString();
-    }
 }

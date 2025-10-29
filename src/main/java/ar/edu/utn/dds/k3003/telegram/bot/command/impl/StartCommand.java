@@ -4,9 +4,7 @@ import ar.edu.utn.dds.k3003.telegram.bot.command.AbstractBotCommand;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-/**
- * Comando /start - Mensaje de bienvenida
- */
+
 @Component
 public class StartCommand extends AbstractBotCommand {
 
@@ -22,6 +20,7 @@ public class StartCommand extends AbstractBotCommand {
                 • Ver detalles de un hecho con sus PDIs
                 • Agregar nuevos hechos
                 • Agregar PDIs a un hecho
+                • Crear solicitudes de borrado
                 • Cambiar el estado de solicitudes de borrado
                 
                 📝 Usa /help para ver todos los comandos disponibles.

@@ -8,10 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
 
-/**
- * Requerimiento 1: Listar hechos de una colección del agregador
- * Comando: /listarhechos <coleccion>
- */
+// Comando: /listarhechos <coleccion>
 @Component
 public class ListarHechosColeccionCommand extends AbstractBotCommand {
 

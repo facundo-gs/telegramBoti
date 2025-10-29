@@ -5,20 +5,16 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Template Method Pattern: Clase base para comandos del bot
- * Define el flujo común de ejecución y validación
- */
+//Template Method
 @Slf4j
 public abstract class AbstractBotCommand implements BotCommand {
 
     @Override
-    public String execute(Update update) throws TelegramApiException {
+    public String execute(Update update) {
         try {
             log.info("Ejecutando comando: {} por usuario: {}",
                     getCommandName(),
@@ -48,14 +44,8 @@ public abstract class AbstractBotCommand implements BotCommand {
         }
     }
 
-    /**
-     * Abstract method que cada comando debe implementar con su lógica específica
-     */
     protected abstract String executeCommand(Update update) throws TelegramApiException;
 
-    /**
-     * Extrae los parámetros del mensaje
-     */
     protected List<String> extractParameters(Update update) {
         String text = update.getMessage().getText();
 
@@ -79,37 +69,18 @@ public abstract class AbstractBotCommand implements BotCommand {
     }
 
 
-    /**
-     * Obtiene el chat ID del usuario
-     */
-    protected Long getChatId(Update update) {
-        return update.getMessage().getChatId();
-    }
-
-    /**
-     * Obtiene el username del usuario
-     */
     protected String getUsername(Update update) {
         return update.getMessage().getFrom().getUserName();
     }
 
-    /**
-     * Formatea una respuesta de error
-     */
     protected String formatError(String message) {
         return "❌ " + message;
     }
 
-    /**
-     * Formatea una respuesta de éxito
-     */
     protected String formatSuccess(String message) {
         return "✅ " + message;
     }
 
-    /**
-     * Formatea información
-     */
     protected String formatInfo(String message) {
         return "ℹ️ " + message;
     }
