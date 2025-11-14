@@ -65,7 +65,6 @@ public class HelpCommand extends AbstractBotCommand {
         if (!unclassified.isEmpty()) {
             appendSection(out, "-- Otros --", unclassified);
         }
-
         return out.toString();
     }
 
@@ -83,7 +82,7 @@ public class HelpCommand extends AbstractBotCommand {
             if (c.requiresParameters()) {
                 String usage = c.getUsageExample();
                 if (usage != null && !usage.isBlank()) {
-                    out.append("   _Ejemplo:_ ")
+                    out.append("   _Ejemplo/s:_ ")
                        .append(usage)
                        .append("\n");
                 }

@@ -2,6 +2,7 @@ package ar.edu.utn.dds.k3003.telegram.bot.command.impl;
 
 import ar.edu.utn.dds.k3003.telegram.bot.command.AbstractBotCommand;
 import ar.edu.utn.dds.k3003.telegram.bot.rest_client.AgregadorRestClient;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -9,12 +10,13 @@ import java.util.List;
 import java.util.Set;
 
 @Component
+@RequiredArgsConstructor
 public class AplicarConsensoCommand extends AbstractBotCommand {
-    private final AgregadorRestClient agregador;
 
-    public AplicarConsensoCommand(AgregadorRestClient agregador) {
-        this.agregador = agregador;
-    }
+    public static final String AL_MENOS_2 = "AL_MENOS_2";
+    public static final String TODOS = "TODOS";
+    public static final String ESTRICTO = "ESTRICTO";
+    private final AgregadorRestClient agregador;
 
     @Override
     protected String executeCommand(Update update) {
@@ -33,7 +35,7 @@ public class AplicarConsensoCommand extends AbstractBotCommand {
         String tipo = normalizeTipo(rawTipo);
         String coleccion = p.get(1).trim();
 
-        if (!Set.of("TODOS", "AL_MENOS_2", "ESTRICTO").contains(tipo)) {
+        if (!Set.of(TODOS, AL_MENOS_2, ESTRICTO).contains(tipo)) {
             return formatError("Tipo inválido. Debe ser: TODOS, AL_MENOS_2 o ESTRICTO.");
         }
 
@@ -48,7 +50,7 @@ public class AplicarConsensoCommand extends AbstractBotCommand {
     }
 
     private String normalizeTipo(String t) {
-        if ("ALMENOS2".equals(t) || "AL_MENOS_2".equals(t)) return "AL_MENOS_2";
+        if ("ALMENOS2".equals(t) || AL_MENOS_2.equals(t)) return AL_MENOS_2;
         return t;
     }
 

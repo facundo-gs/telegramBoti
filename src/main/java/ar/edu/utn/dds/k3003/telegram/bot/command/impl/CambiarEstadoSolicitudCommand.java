@@ -5,6 +5,7 @@ import ar.edu.utn.dds.k3003.telegram.bot.dtos.SolicitudDTO;
 import ar.edu.utn.dds.k3003.telegram.bot.dtos.EstadoSolicitudBorradoEnum;
 import ar.edu.utn.dds.k3003.telegram.bot.dtos.SolicitudModificacionRequestDTO;
 import ar.edu.utn.dds.k3003.telegram.bot.command.AbstractBotCommand;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -13,13 +14,10 @@ import java.util.List;
 // Uso: /cambiarestado <solicitudId> <estado> [descripcion]
 
 @Component
+@RequiredArgsConstructor
 public class CambiarEstadoSolicitudCommand extends AbstractBotCommand {
 
     private final SolicitudesRestClient solicitudesRestClient;
-
-    public CambiarEstadoSolicitudCommand(SolicitudesRestClient solicitudesRestClient) {
-        this.solicitudesRestClient = solicitudesRestClient;
-    }
 
     @Override
     protected String executeCommand(Update update) {
@@ -60,7 +58,8 @@ public class CambiarEstadoSolicitudCommand extends AbstractBotCommand {
             return formatError("Estado inválido. Los valores válidos son: " +
                     String.join(", ", EstadoSolicitudBorradoEnum.valuesAsString()));
         } catch (Exception e) {
-            return formatError("No se pudo actualizar la solicitud: " + e.getMessage());
+            String userMessage = extractMessageFromException(e);
+            return formatError("Error al actualizar solicitud: " + userMessage);
         }
     }
 

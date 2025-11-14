@@ -3,20 +3,19 @@ package ar.edu.utn.dds.k3003.telegram.bot.command.impl;
 import ar.edu.utn.dds.k3003.telegram.bot.command.AbstractBotCommand;
 import ar.edu.utn.dds.k3003.telegram.bot.dtos.HechoDTO;
 import ar.edu.utn.dds.k3003.telegram.bot.rest_client.AgregadorRestClient;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 // Comando: /listarhechos <coleccion>
 @Component
+@RequiredArgsConstructor
 public class ListarHechosColeccionCommand extends AbstractBotCommand {
 
     private final AgregadorRestClient agregadorRestClient;
-
-    public ListarHechosColeccionCommand(AgregadorRestClient agregadorRestClient) {
-        this.agregadorRestClient = agregadorRestClient;
-    }
 
     @Override
     protected String executeCommand(Update update) {
@@ -57,7 +56,7 @@ public class ListarHechosColeccionCommand extends AbstractBotCommand {
                 }
 
                 if (hecho.fecha() != null) {
-                    response.append("   *Fecha:* ").append(hecho.fecha()).append("\n");
+                    response.append("   *Fecha:* ").append(hecho.fecha().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))).append("\n");
                 }
 
                 if (hecho.ubicacion() != null) {
@@ -74,7 +73,8 @@ public class ListarHechosColeccionCommand extends AbstractBotCommand {
             return response.toString();
 
         } catch (Exception e) {
-            return formatError("Error al obtener hechos de la colección *" + coleccionId + "*: " + e.getMessage());
+            String userMessage = extractMessageFromException(e);
+            return formatError(userMessage);
         }
     }
 
@@ -89,7 +89,7 @@ public class ListarHechosColeccionCommand extends AbstractBotCommand {
 
     @Override
     public String getDescription() {
-        return "Lista todos los hechos de una colección del agregador";
+        return "Lista los hechos de una colección del agregador";
     }
 
     @Override

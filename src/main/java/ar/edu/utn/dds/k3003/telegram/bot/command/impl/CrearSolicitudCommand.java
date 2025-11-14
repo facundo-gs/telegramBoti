@@ -3,6 +3,7 @@ package ar.edu.utn.dds.k3003.telegram.bot.command.impl;
 import ar.edu.utn.dds.k3003.telegram.bot.rest_client.SolicitudesRestClient;
 import ar.edu.utn.dds.k3003.telegram.bot.dtos.SolicitudDTO;
 import ar.edu.utn.dds.k3003.telegram.bot.command.AbstractBotCommand;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -10,13 +11,10 @@ import java.util.List;
 
 // Uso: /crearsolicitud <hecho_id> <descripcion>
 @Component
+@RequiredArgsConstructor
 public class CrearSolicitudCommand extends AbstractBotCommand {
 
     private final SolicitudesRestClient solicitudesRestClient;
-
-    public CrearSolicitudCommand(SolicitudesRestClient solicitudesRestClient) {
-        this.solicitudesRestClient = solicitudesRestClient;
-    }
 
     @Override
     protected String executeCommand(Update update) {
@@ -44,16 +42,14 @@ public class CrearSolicitudCommand extends AbstractBotCommand {
 
             SolicitudDTO solicitudCreada = solicitudesRestClient.agregar(nuevaSolicitud);
 
-            StringBuilder response = new StringBuilder();
-            response.append(formatSuccess("Solicitud creada exitosamente!")).append("\n\n");
-            response.append("🆔 *ID:* ").append(solicitudCreada.id()).append("\n");
-            response.append("📄 *Descripción:* ").append(solicitudCreada.descripcion()).append("\n");
-            response.append("⚙️ *Estado:* ").append(solicitudCreada.estado()).append("\n");
-            response.append("🚦 *Hecho ID:* ").append(solicitudCreada.hechoId()).append("\n");
-
-            return response.toString();
+            return formatSuccess("Solicitud creada exitosamente!") + "\n\n" +
+                    "🆔 *ID:* " + solicitudCreada.id() + "\n" +
+                    "📄 *Descripción:* " + solicitudCreada.descripcion() + "\n" +
+                    "⚙️ *Estado:* " + solicitudCreada.estado() + "\n" +
+                    "🚦 *Hecho ID:* " + solicitudCreada.hechoId() + "\n";
         } catch (Exception e) {
-            return formatError("No se pudo crear la solicitud: " + e.getMessage());
+            String userMessage = extractMessageFromException(e);
+            return formatError("Error al crear solicitud: " + userMessage);
         }
     }
 

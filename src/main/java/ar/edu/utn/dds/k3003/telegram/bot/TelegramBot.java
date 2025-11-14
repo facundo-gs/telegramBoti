@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
-import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -41,7 +39,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        // Validar que el update tenga un mensaje con texto
         if (!isValidUpdate(update)) {
             log.debug("Update recibido sin mensaje de texto, ignorando");
             return;
@@ -79,17 +76,12 @@ public class TelegramBot extends TelegramLongPollingBot {
             return update.getMessage().getFrom().getUserName();
         }
 
-        // Fallback a firstName o ID si no tiene username
-        if (update.getMessage().getFrom().getFirstName() != null) {
-            return update.getMessage().getFrom().getFirstName();
-        }
+        return update.getMessage().getFrom().getFirstName();
 
-        return "Usuario" + update.getMessage().getFrom().getId();
     }
 
 
     private String processCommand(Update update, String messageText) {
-        // Extraer el nombre del comando
         String commandName = extractCommandName(messageText);
 
         if (commandName.isEmpty()) {
@@ -99,7 +91,6 @@ public class TelegramBot extends TelegramLongPollingBot {
                     "Usa /help para ver los comandos disponibles.";
         }
 
-        // Buscar el comando en el registry
         Optional<BotCommand> commandOpt = commandRegistry.getCommand(commandName);
 
         if (commandOpt.isEmpty()) {
@@ -107,7 +98,6 @@ public class TelegramBot extends TelegramLongPollingBot {
             return formatUnknownCommandMessage(commandName);
         }
 
-        // Ejecutar el comando
         BotCommand command = commandOpt.get();
         log.debug("Ejecutando comando: {}", command.getCommandName());
 
@@ -125,7 +115,6 @@ public class TelegramBot extends TelegramLongPollingBot {
             return "";
         }
 
-        // Remover el '/' y obtener solo el nombre del comando (antes del primer espacio)
         String[] parts = messageText.substring(1).split("\\s+");
         return parts[0].toLowerCase();
     }
@@ -136,7 +125,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         message.append("❌ Comando no reconocido: /").append(commandName).append("\n\n");
         message.append("Usa /help para ver todos los comandos disponibles.\n\n");
 
-        // Sugerir comandos similares si es posible
         String suggestion = findSimilarCommand(commandName);
         if (suggestion != null) {
             message.append("💡 ¿Quisiste decir /").append(suggestion).append("?");
@@ -162,7 +150,6 @@ public class TelegramBot extends TelegramLongPollingBot {
             return;
         }
 
-        // Telegram tiene un límite de 4096 caracteres por mensaje
         if (text.length() > 4096) {
             log.warn("Mensaje demasiado largo ({}), dividiendo...", text.length());
             sendLongMessage(chatId, text);
@@ -181,7 +168,6 @@ public class TelegramBot extends TelegramLongPollingBot {
             log.debug("✅ Mensaje enviado a chatId: {}", chatId);
         } catch (TelegramApiException e) {
             log.error("❌ Error enviando mensaje a chatId {}: {}", chatId, e.getMessage());
-            // Intentar enviar sin Markdown si falla
             retryWithoutMarkdown(chatId, text);
         }
     }
@@ -196,7 +182,6 @@ public class TelegramBot extends TelegramLongPollingBot {
             String chunk = text.substring(i, end);
             sendMessage(chatId, chunk);
 
-            // Pequeña pausa entre mensajes para evitar rate limiting
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -205,9 +190,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    /**
-     * Reintenta enviar mensaje sin formato Markdown
-     */
     private void retryWithoutMarkdown(Long chatId, String text) {
         SendMessage plainMessage = SendMessage.builder()
                 .chatId(chatId.toString())
@@ -222,9 +204,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    /**
-     * Envía un mensaje de error al usuario
-     */
     private void sendErrorMessage(Long chatId, Exception e) {
         String errorMessage = "❌ *Error interno del bot*\n\n" +
                 "Ocurrió un error al procesar tu solicitud.\n" +
@@ -234,72 +213,4 @@ public class TelegramBot extends TelegramLongPollingBot {
         sendMessage(chatId, errorMessage);
     }
 
-    /**
-     * Envía una imagen al usuario
-     */
-    public void sendPhoto(Long chatId, String photoUrl, String caption) {
-        if (chatId == null || photoUrl == null || photoUrl.trim().isEmpty()) {
-            log.warn("Intento de enviar foto inválida");
-            return;
-        }
-
-        SendPhoto photo = SendPhoto.builder()
-                .chatId(chatId.toString())
-                .photo(new InputFile(photoUrl))
-                .caption(caption != null ? caption : "")
-                .parseMode("Markdown")
-                .build();
-
-        try {
-            execute(photo);
-            log.debug("✅ Imagen enviada a chatId: {}", chatId);
-        } catch (TelegramApiException e) {
-            log.error("❌ Error enviando imagen a chatId {}: {}", chatId, e.getMessage());
-            // Fallback: enviar solo el texto con la URL
-            String fallbackMessage = (caption != null ? caption + "\n\n" : "") +
-                    "🖼️ Imagen: " + photoUrl;
-            sendMessage(chatId, fallbackMessage);
-        }
-    }
-
-    /**
-     * Envía un mensaje con formato personalizado
-     */
-    public void sendFormattedMessage(Long chatId, String text, boolean enableMarkdown) {
-        if (chatId == null || text == null || text.trim().isEmpty()) {
-            return;
-        }
-
-        SendMessage message = SendMessage.builder()
-                .chatId(chatId.toString())
-                .text(text)
-                .build();
-
-        if (enableMarkdown) {
-            message.setParseMode("Markdown");
-        }
-
-        try {
-            execute(message);
-        } catch (TelegramApiException e) {
-            log.error("❌ Error enviando mensaje formateado: {}", e.getMessage());
-            // Fallback sin formato
-            if (enableMarkdown) {
-                sendFormattedMessage(chatId, text, false);
-            }
-        }
-    }
-
-    /**
-     * Obtiene estadísticas del bot
-     */
-    public String getBotStats() {
-        return String.format(
-                "📊 Estadísticas del Bot\n" +
-                        "Bot: @%s\n" +
-                        "Comandos disponibles: %d",
-                botUsername,
-                commandRegistry.getAllCommands().size()
-        );
-    }
 }

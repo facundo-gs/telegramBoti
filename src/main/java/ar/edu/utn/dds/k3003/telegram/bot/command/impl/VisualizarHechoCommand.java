@@ -5,23 +5,22 @@ import ar.edu.utn.dds.k3003.telegram.bot.dtos.PdIDTO;
 import ar.edu.utn.dds.k3003.telegram.bot.rest_client.FuenteRestClient;
 import ar.edu.utn.dds.k3003.telegram.bot.command.AbstractBotCommand;
 import ar.edu.utn.dds.k3003.telegram.bot.rest_client.PdIRestClient;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 
 
 // Comando: /visualizarhecho <hecho_id>
 @Component
+@RequiredArgsConstructor
 public class VisualizarHechoCommand extends AbstractBotCommand {
 
     private final FuenteRestClient fuenteRestClient;
     private final PdIRestClient pdiRestClient;
-
-    public VisualizarHechoCommand(FuenteRestClient fuenteRestClient, PdIRestClient pdIRestClient) {
-        this.fuenteRestClient = fuenteRestClient;
-        this.pdiRestClient = pdIRestClient;
-    }
 
     @Override
     protected String executeCommand(Update update) {
@@ -44,6 +43,10 @@ public class VisualizarHechoCommand extends AbstractBotCommand {
             // 2. Obtener PDIs asociados al hecho
             List<PdIDTO> pdis = pdiRestClient.buscarPorHecho(hechoId);
 
+            if(Objects.equals(hecho.titulo(), "Censurado")) {
+                return formatError("Hecho censurado");
+            }
+
             // 3. Formatear respuesta completa
             StringBuilder response = new StringBuilder();
 
@@ -64,7 +67,7 @@ public class VisualizarHechoCommand extends AbstractBotCommand {
             }
 
             if (hecho.fecha() != null) {
-                response.append("📅 *Fecha:* ").append(hecho.fecha()).append("\n");
+                response.append("📅 *Fecha:* ").append(hecho.fecha().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))).append("\n");
             }
 
             if (hecho.categoria() != null) {
@@ -107,11 +110,11 @@ public class VisualizarHechoCommand extends AbstractBotCommand {
                     }
 
                     if (pdi.momento() != null) {
-                        response.append("  ⏰ Momento: ").append(pdi.momento()).append("\n");
+                        response.append("  ⏰ Momento: ").append(pdi.momento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))).append("\n\n");
                     }
 
                     if (pdi.imagenUrl() != null && !pdi.imagenUrl().isEmpty()) {
-                        response.append("  🖼️ *Imagen disponible*\n");
+                        response.append("  *Imagen disponible*\n");
                         response.append("  📎 URL: ").append(pdi.imagenUrl()).append("\n");
                     }
 
@@ -132,7 +135,7 @@ public class VisualizarHechoCommand extends AbstractBotCommand {
 
                     response.append("\n");
 
-                    // Limitar a 5 PDIs para no exceder límite de Telegram
+                    // Limitar PDIs para no exceder límite de Telegram
                     if (count >= 5 && pdis.size() > 5) {
                         response.append("... y ").append(pdis.size() - 5).append(" PDI(s) más\n\n");
                         break;
@@ -144,7 +147,8 @@ public class VisualizarHechoCommand extends AbstractBotCommand {
             return response.toString();
 
         } catch (Exception e) {
-            return formatError("Error al visualizar hecho: " + e.getMessage());
+            String userMessage = extractMessageFromException(e);
+            return formatError("Error al visualizar hecho: " + userMessage);
         }
     }
 

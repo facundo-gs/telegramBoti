@@ -4,24 +4,23 @@ import ar.edu.utn.dds.k3003.telegram.bot.dtos.CategoriaHechoEnum;
 import ar.edu.utn.dds.k3003.telegram.bot.dtos.HechoDTO;
 import ar.edu.utn.dds.k3003.telegram.bot.rest_client.FuenteRestClient;
 import ar.edu.utn.dds.k3003.telegram.bot.command.AbstractBotCommand;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
 // Uso: /agregarhecho <nombre_coleccion> <titulo> <ubicacion> [categoria]
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class AgregarHechoCommand extends AbstractBotCommand {
 
     private final FuenteRestClient fuenteRestClient;
-
-    public AgregarHechoCommand(FuenteRestClient fuenteRestClient) {
-        this.fuenteRestClient = fuenteRestClient;
-    }
 
     @Override
     protected String executeCommand(Update update) {
@@ -32,7 +31,7 @@ public class AgregarHechoCommand extends AbstractBotCommand {
                     "Faltan parámetros.\n" +
                             "Uso: /agregarhecho <nombre_coleccion> <titulo> <ubicacion> [categoria]\n\n" +
                             "Ejemplo 1 (sin categoría):\n" +
-                            "/agregarhecho coleccion1 \"Manifestación pacífica\" \"Buenos Aires\"\n\n" +
+                            "/agregarhecho coleccion1 \"Colección\" \"Buenos Aires\"\n\n" +
                             "Ejemplo 2 (con categoría):\n" +
                             "/agregarhecho coleccion1 \"Charla sobre IA\" \"UTN Buenos Aires\" EDUCACIONAL"
             );
@@ -76,7 +75,7 @@ public class AgregarHechoCommand extends AbstractBotCommand {
             response.append("🏷️ *Categoría:* ").append(hechoCreado.categoria()).append("\n");
 
             if (hechoCreado.fecha() != null) {
-                response.append("📅 *Fecha:* ").append(hechoCreado.fecha()).append("\n");
+                response.append("📅 *Fecha:* ").append(hechoCreado.fecha().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))).append("\n");
             }
 
             if (hechoCreado.origen() != null) {
@@ -86,7 +85,8 @@ public class AgregarHechoCommand extends AbstractBotCommand {
             return response.toString();
 
         } catch (Exception e) {
-            return formatError("Error al crear hecho: " + e.getMessage());
+            String userMessage = extractMessageFromException(e);
+            return formatError("Error al agregar hecho: " + userMessage);
         }
     }
 
@@ -97,7 +97,7 @@ public class AgregarHechoCommand extends AbstractBotCommand {
 
     @Override
     public String getDescription() {
-        return "Agrega un nuevo hecho a una fuente indicando la colección, título, ubicación y categoría opcional.";
+        return "Agrega un nuevo hecho a una fuente (categoría opcional).";
     }
 
     @Override
@@ -107,9 +107,9 @@ public class AgregarHechoCommand extends AbstractBotCommand {
 
     @Override
     public String getUsageExample() {
-        return "Ejemplo 1 (sin categoría):\n" +
-                "/agregarhecho coleccion1 \"Manifestación pacífica\" \"Buenos Aires\"\n\n" +
+        return "\nEjemplo 1 (sin categoría):\n" +
+                "/agregarhecho \"Coleccion1\" \"Titulo\" \"Ubicación\"\n\n" +
                 "Ejemplo 2 (con categoría):\n" +
-                "/agregarhecho coleccion1 \"Charla sobre IA\" \"UTN Buenos Aires\" EDUCACIONAL";
+                "/agregarhecho \"Coleccion1\" \"Titulo\" \"Ubicación\" EDUCACIONAL";
     }
 }

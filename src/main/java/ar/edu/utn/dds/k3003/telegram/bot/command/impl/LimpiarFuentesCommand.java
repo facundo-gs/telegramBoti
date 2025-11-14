@@ -2,16 +2,14 @@ package ar.edu.utn.dds.k3003.telegram.bot.command.impl;
 
 import ar.edu.utn.dds.k3003.telegram.bot.command.AbstractBotCommand;
 import ar.edu.utn.dds.k3003.telegram.bot.rest_client.AgregadorRestClient;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Component
+@RequiredArgsConstructor
 public class LimpiarFuentesCommand extends AbstractBotCommand {
     private final AgregadorRestClient agregador;
-
-    public LimpiarFuentesCommand(AgregadorRestClient agregador) {
-        this.agregador = agregador;
-    }
 
     @Override
     protected String executeCommand(Update update) {

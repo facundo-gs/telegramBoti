@@ -1,18 +1,12 @@
 package ar.edu.utn.dds.k3003.telegram.bot.rest_client;
 
 import ar.edu.utn.dds.k3003.telegram.bot.dtos.HechoDTO;
+import ar.edu.utn.dds.k3003.telegram.bot.dtos.PdIDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
-import java.util.List;
-import java.util.Map;
-
-/**
- * Cliente REST para el módulo Fuente
- * https://dsifuente.onrender.com
- */
 @Component
 @Slf4j
 public class FuenteRestClient {
@@ -78,4 +72,24 @@ public class FuenteRestClient {
             throw new RuntimeException("Error conectando con el servicio de fuentes: " + e.getMessage(), e);
         }
     }
+
+    /**
+     * Crea un nuevo PdI
+     * Endpoint: POST /api/PdIs
+     */
+    public PdIDTO crearPdI(PdIDTO nuevoPdi) {
+        try {
+            log.info("Creando nuevo PdI para hecho {}", nuevoPdi.hechoId());
+
+            return restClient.post()
+                    .uri("/api/hecho/PdIs")
+                    .body(nuevoPdi)
+                    .retrieve()
+                    .body(PdIDTO.class);
+        } catch (Exception e) {
+            log.error("Error creando PdI para hecho {}: {}", nuevoPdi.hechoId(), e.getMessage());
+            throw new RuntimeException("Error conectando con PdI: " + e.getMessage(), e);
+        }
+    }
+
 }

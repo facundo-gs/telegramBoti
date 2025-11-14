@@ -3,6 +3,7 @@ package ar.edu.utn.dds.k3003.telegram.bot.command.impl;
 import ar.edu.utn.dds.k3003.telegram.bot.command.AbstractBotCommand;
 import ar.edu.utn.dds.k3003.telegram.bot.dtos.FuenteDTO;
 import ar.edu.utn.dds.k3003.telegram.bot.rest_client.AgregadorRestClient;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -11,12 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public class ListarFuentesCommand extends AbstractBotCommand {
     private final AgregadorRestClient agregador;
-
-    public ListarFuentesCommand(AgregadorRestClient agregador) {
-        this.agregador = agregador;
-    }
 
     @Override
     protected String executeCommand(Update update) {

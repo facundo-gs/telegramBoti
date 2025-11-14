@@ -8,20 +8,10 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
-/**
- * Configuración del bot de Telegram
- * Registra el bot con la API de Telegram al iniciar la aplicación
- */
 @Configuration
 @Slf4j
 public class TelegramBotConfig {
 
-    /**
-     * Inicializa y registra el bot con Telegram
-     * @param telegramBot El bot a registrar
-     * @return TelegramBotsApi instance
-     * @throws RuntimeException si falla el registro
-     */
     @Bean
     public TelegramBotsApi telegramBotsApi(TelegramBot telegramBot) {
         try {

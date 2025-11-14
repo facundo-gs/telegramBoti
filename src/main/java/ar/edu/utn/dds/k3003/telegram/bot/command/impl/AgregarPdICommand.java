@@ -1,8 +1,9 @@
 package ar.edu.utn.dds.k3003.telegram.bot.command.impl;
 
-import ar.edu.utn.dds.k3003.telegram.bot.rest_client.PdIRestClient;
+import ar.edu.utn.dds.k3003.telegram.bot.rest_client.FuenteRestClient;
 import ar.edu.utn.dds.k3003.telegram.bot.dtos.PdIDTO;
 import ar.edu.utn.dds.k3003.telegram.bot.command.AbstractBotCommand;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -14,13 +15,10 @@ import java.util.List;
 // Uso: /agregarpdi <hecho_id> <descripcion> <lugar> <contenido> [imagenUrl]
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class AgregarPdICommand extends AbstractBotCommand {
 
-    private final PdIRestClient pdIRestClient;
-
-    public AgregarPdICommand(PdIRestClient pdIRestClient) {
-        this.pdIRestClient = pdIRestClient;
-    }
+    private final FuenteRestClient fuenteRestClient;
 
     @Override
     protected String executeCommand(Update update) {
@@ -54,28 +52,17 @@ public class AgregarPdICommand extends AbstractBotCommand {
                     imagenUrl
             );
             log.info("AgregarPdICommand - nuevo PDI: {}", nuevoPdi);
-            PdIDTO pdiCreado = pdIRestClient.crearPdI(nuevoPdi);
-            log.info("AgregarPdICommand - PDI creado: {}", pdiCreado);
+            PdIDTO pdiCreado = fuenteRestClient.crearPdI(nuevoPdi);
+            log.info("AgregarPdICommand - PDI enviado a fuente: {}", pdiCreado);
 
-            StringBuilder response = new StringBuilder();
-            response.append(formatSuccess("PDI creado exitosamente!")).append("\n\n");
-            response.append("🆔 *ID:* ").append(pdiCreado.id()).append("\n");
-            response.append("📌 *Hecho:* ").append(pdiCreado.hechoId()).append("\n");
-            response.append("📝 *Descripción:* ").append(pdiCreado.descripcion()).append("\n");
-            response.append("📍 *Lugar:* ").append(pdiCreado.lugar()).append("\n");
-            response.append("📄 *Contenido:* ").append(pdiCreado.contenido()).append("\n");
-
-            if (imagenUrl != null) {
-                response.append("\n🖼️ *Imagen:* ").append(pdiCreado.imagenUrl()).append("\n");
-                if (pdiCreado.etiquetasIA() == null || !pdiCreado.etiquetasIA().isEmpty())
-                    response.append("📌 *Etiquetas:* ").append(pdiCreado.etiquetasIA()).append("\n");
-                if (pdiCreado.ocrText() != null)
-                    response.append("📌 *OCR text:* ").append(pdiCreado.ocrText()).append("\n");
-            }
-
-            return response.toString();
+            return formatSuccess("Procesando pieza de información!") + "\n\n" +
+                    "📌 Hecho: " + pdiCreado.hechoId() + "\n" +
+                    "📝 Descripción: " + pdiCreado.descripcion() + "\n" +
+                    "📍 Lugar: " + pdiCreado.lugar() + "\n" +
+                    "📄 Contenido: " + pdiCreado.contenido() + "\n";
         } catch (Exception e) {
-            return formatError("No se pudo crear el PDI: " + e.getMessage());
+            String userMessage = extractMessageFromException(e);
+            return formatError("Error al procesar pdi: " + userMessage);
         }
     }
 
@@ -86,7 +73,7 @@ public class AgregarPdICommand extends AbstractBotCommand {
 
     @Override
     public String getDescription() {
-        return "Agrega un nuevo PDI a un hecho";
+        return "Agrega una pieza de información a un hecho";
     }
 
     @Override
@@ -96,9 +83,9 @@ public class AgregarPdICommand extends AbstractBotCommand {
 
     @Override
     public String getUsageExample() {
-        return "Ejemplo 1 (sin imagen):\n" +
-                "/agregarpdi HECHO-001 \"Descripcion del evento\" \"Buenos Aires\" \"Contenido del evento\"\n\n" +
+        return "\nEjemplo 1 (sin imagen):\n" +
+                "/agregarpdi HECHO-001 \"Descripcion\" \"Ubicación\" \"Contenido\"\n\n" +
                 "Ejemplo 2 (con imagen):\n" +
-                "/agregarpdi HECHO-001 \"Evento con imagen\" \"Buenos Aires\" \"Contenido del evento\" https://imagen.jpg";
+                "/agregarpdi HECHO-001 \"Descripción\" \"Ubicación\" \"Contenido\" https://imagen.jpg";
     }
 }
