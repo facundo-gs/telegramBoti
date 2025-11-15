@@ -6,8 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
-import java.util.List;
-
 @Slf4j
 @Component
 public class SolicitudesRestClient {
@@ -16,7 +14,7 @@ public class SolicitudesRestClient {
 
     public SolicitudesRestClient() {
         var env = System.getenv();
-        String endpoint = env.getOrDefault("DDS_SOLICITUDES", "http://localhost:8080");
+        String endpoint = env.getOrDefault("DDS_SOLICITUDESy", "http://localhost:8080");
 
         this.restClient = RestClient.builder()
                 .baseUrl(endpoint)

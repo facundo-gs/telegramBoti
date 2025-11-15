@@ -14,7 +14,7 @@ public class FuenteRestClient {
     private final RestClient restClient;
 
     public FuenteRestClient(RestClient.Builder builder) {
-        String endpoint = System.getenv().getOrDefault("DDS_FUENTE", "http://localhost:8082");
+        String endpoint = System.getenv().getOrDefault("DDS_FUENTEy", "http://localhost:8082");
         this.restClient = builder.baseUrl(endpoint).build();
     }
 

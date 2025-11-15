@@ -21,7 +21,6 @@ public class HelpCommand extends AbstractBotCommand {
 
     @Override
     protected String executeCommand(Update update) {
-        // Mapear nombres de comando a secciones
         Set<String> agregador = setOf(
                 "agregarfuente", "listarfuentes", "limpiarfuentes",
                 "consenso", "listarhechos"
@@ -35,11 +34,15 @@ public class HelpCommand extends AbstractBotCommand {
                 "crearsolicitud", "cambiarestado"
         );
 
+        // ✅ NUEVA SECCIÓN DE BÚSQUEDA
+        Set<String> busqueda = setOf(
+                "buscar", "siguiente", "anterior"
+        );
+
         Set<String> sistema = setOf(
                 "start", "help"
         );
 
-        // Índice rápido por nombre
         Map<String, BotCommand> byName = commandRegistry.getAllCommands().stream()
                 .collect(Collectors.toMap(BotCommand::getCommandName, c -> c));
 
@@ -47,44 +50,53 @@ public class HelpCommand extends AbstractBotCommand {
 
         appendSection(out, "-- Sección Agregador --",
                 orderedFilter(agregador, byName));
+
         appendSection(out, "-- Hechos & PDIs --",
                 orderedFilter(hechosYpdis, byName));
+
         appendSection(out, "-- Solicitudes --",
                 orderedFilter(solicitudes, byName));
+
+        // ✅ AGREGAR SECCIÓN DE BÚSQUEDA
+        appendSection(out, "-- Búsqueda --",
+                orderedFilter(busqueda, byName));
+
         appendSection(out, "-- Sistema --",
                 orderedFilter(sistema, byName));
 
-        // Comandos no clasificados (por si aparece alguno nuevo)
         List<BotCommand> unclassified = commandRegistry.getSortedCommands().stream()
                 .filter(c -> !agregador.contains(c.getCommandName())
                         && !hechosYpdis.contains(c.getCommandName())
                         && !solicitudes.contains(c.getCommandName())
+                        && !busqueda.contains(c.getCommandName()) // ✅ AGREGAR
                         && !sistema.contains(c.getCommandName()))
                 .toList();
 
         if (!unclassified.isEmpty()) {
             appendSection(out, "-- Otros --", unclassified);
         }
+
         return out.toString();
     }
 
     private static void appendSection(StringBuilder out, String title, List<BotCommand> commands) {
         if (commands == null || commands.isEmpty()) return;
 
-        out.append("*").append(title).append("*\n\n"); // título en negrita (Markdown)
+        out.append("*").append(title).append("*\n\n");
+
         for (BotCommand c : commands) {
             out.append("/")
-               .append(c.getCommandName())
-               .append(" - ")
-               .append(c.getDescription() != null ? c.getDescription() : "")
-               .append("\n");
+                    .append(c.getCommandName())
+                    .append(" - ")
+                    .append(c.getDescription() != null ? c.getDescription() : "")
+                    .append("\n");
 
             if (c.requiresParameters()) {
                 String usage = c.getUsageExample();
                 if (usage != null && !usage.isBlank()) {
                     out.append("   _Ejemplo/s:_ ")
-                       .append(usage)
-                       .append("\n");
+                            .append(usage)
+                            .append("\n");
                 }
             }
             out.append("\n");
